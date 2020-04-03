@@ -1,6 +1,5 @@
 # polysemy-playground
 
-```
 #### Select person/s
 
 - All
