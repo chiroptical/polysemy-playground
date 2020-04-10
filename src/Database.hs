@@ -115,12 +115,14 @@ createPerson
 createPerson PersonNoId {..} = do
   persons_ <- listPersons (Just name) Nothing Nothing
   if null persons_
-     then do
-        [person_] <-
-          runInsertReturningList $ insert (_personPerson personDb) $ insertExpressions
+    then do
+      [person_] <-
+        runInsertReturningList
+        $ insert (_personPerson personDb)
+        $ insertExpressions
             [Person_ default_ (val_ name) (val_ age) (val_ address)]
-        return . Right . toPerson $ person_
-     else return . Left $ PersonAlreadyExists name
+      return . Right . toPerson $ person_
+    else return . Left $ PersonAlreadyExists name
 
 readPersonByName :: MonadBeam Sqlite m => Text -> m (Maybe Person)
 readPersonByName = (fmap . fmap) toPerson . readPersonByName_

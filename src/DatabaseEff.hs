@@ -19,9 +19,18 @@ import           Database.SQLite.Simple         ( open
 import           Polysemy
 import           Polysemy.Reader
 import           Polysemy.Trace
-import           Polysemy.Error
+import           Polysemy.Error                 ( Error
+                                                , throw
+                                                , fromEither
+                                                )
 
 import           Control.Exception              ( bracket )
+
+-- This function is defined in Polysemy.Error for 1.3.0.0
+-- however w/ 1.3.0.0 this code won't compile on my machine
+note :: Member (Error e) r => e -> Maybe a -> Sem r a
+note e Nothing  = throw e
+note _ (Just a) = pure a
 
 data DatabaseEff m a where
   MakeTablesIfNotExists ::DatabaseEff m ()
@@ -52,24 +61,17 @@ databaseEffToIO sem = do
         embed . runQuery conn_s $ Database.listPersons mName mAge mAddr
       CreatePerson pNoId -> do
         trace "CHIRO: insertPerson called"
-        ePerson <- embed . runQuery conn_s $ Database.createPerson pNoId
-        case ePerson of
-          Right value -> return value
-          Left err -> throw err
+        (embed . runQuery conn_s $ Database.createPerson pNoId)
+          >>= fromEither
       ReadPerson id -> do
         trace "CHIRO: readPerson called"
-        mPerson <- embed . runQuery conn_s $ Database.readPerson id
-        case mPerson of
-          Just person -> return person
-          Nothing -> throw $ PersonIdDoesNotExist id
+        (embed . runQuery conn_s $ Database.readPerson id)
+          >>= note (PersonIdDoesNotExist id)
       UpdatePerson person -> do
         let Person {..} = person
         trace "CHIRO: updatePerson called"
-        mPerson <- embed . runQuery conn_s $ Database.updatePerson person
-        case mPerson of
-          Just person -> return person
-          Nothing -> throw $ PersonDoesNotExist name
-
+        (embed . runQuery conn_s $ Database.updatePerson person)
+          >>= note (PersonDoesNotExist name)
       DestroyPerson person -> do
         trace "CHIRO: destroyPerson called"
         embed . runQuery conn_s $ Database.destroyPersonByName person

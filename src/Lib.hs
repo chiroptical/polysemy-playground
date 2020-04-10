@@ -12,7 +12,7 @@ newtype Config =
     }
   deriving (Show)
 
-program :: Members '[ Reader String] r => Sem r Config
+program :: Members '[Reader String] r => Sem r Config
 program = do
   cfg <- ask @String
   return $ Config cfg
