@@ -40,6 +40,7 @@ curl -H "Content-type: application/json" \
 
 #### Notes
 
-Would like to use co-log-polysemy to have more powerful control over our trace
-effect. However, we are waiting on https://github.com/tathougies/beam/pull/443
-for beam-migrate to work with stack LTS-15.x.
+Would like to use `co-log-polysemy` over `Polysemy.Trace` to have more powerful
+control over our logging effect. However, we are waiting on
+https://github.com/tathougies/beam/pull/443 for beam-migrate to work with stack
+LTS-15.x.
