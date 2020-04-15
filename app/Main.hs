@@ -25,5 +25,5 @@ main = do
     . runReader dbName
     . databaseEffToIO
     $ makeTablesIfNotExists
-  app <- createApp dbName
-  Warp.run 8081 app
+  app' <- app dbName
+  Warp.run 8081 app'

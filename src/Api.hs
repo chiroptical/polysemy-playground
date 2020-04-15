@@ -1,8 +1,16 @@
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
+
 module Api where
 
-import           Database                   (Person (..), PersonNoId (..), DbErr (..))
+import           Database                       ( Person(..)
+                                                , PersonNoId(..)
+                                                , DbErr(..)
+                                                )
 import           DatabaseEff
 import           Servant
+import           Servant.API.Generic
+import           Servant.Server.Generic
 
 import           Polysemy
 import           Polysemy.Reader
@@ -11,41 +19,69 @@ import           Polysemy.Error
 
 import           Control.Monad.Trans.Except
 
-import           Data.Text                  (Text)
-import qualified Data.Text.Lazy as L
-import Data.Text.Lazy.Encoding (encodeUtf8)
+import           Data.Text                      ( Text )
+import qualified Data.Text.Lazy                as L
+import           Data.Text.Lazy.Encoding        ( encodeUtf8 )
 
-type QPStrict = QueryParam' '[ Strict, Required]
+type QPStrict = QueryParam' '[Strict, Required]
 
 -- GET /person?name=...&age=...&address=... is Read w/ optional query parameters
 -- GET /person/{id} is Read w/ specific ID
 -- POST /person is Create
 -- PUT /person is Update
 -- DELETE /person is Destroy
-type Api
-   =    "person" :> QueryParam "name" Text :> QueryParam "age" Int :> QueryParam "address" Text :> Get '[ JSON] [Person]
-   :<|> "person" :> Capture "id" Int :> Get '[ JSON] Person
-   :<|> "person" :> ReqBody '[ JSON] PersonNoId :> Post '[ JSON] Person
-   :<|> "person" :> ReqBody '[ JSON] Person :> Put '[ JSON] Person
-   :<|> "person" :> ReqBody '[ JSON] Person :> Delete '[ JSON] ()
+data Routes route = Routes
+  { _get :: route :- "person" :> QueryParam "name" Text :> QueryParam "age" Int :> QueryParam "address" Text :> Get '[ JSON] [Person]
+  , _getById :: route :- "person" :> Capture "id" Int :> Get '[ JSON] Person
+  , _post :: route :- "person" :> ReqBody '[ JSON] PersonNoId :> Post '[ JSON] Person
+  , _put :: route :- "person" :> ReqBody '[ JSON] Person :> Put '[ JSON] Person
+  , _delete :: route :- "person" :> ReqBody '[ JSON] Person :> Delete '[ JSON] ()
+  } deriving Generic
 
-server :: Member DatabaseEff r => ServerT Api (Sem r)
-server =
-  listPersons :<|> readPerson :<|> createPerson :<|> updatePerson :<|>
-  destroyPerson
+api :: Proxy (ToServantApi Routes)
+api = genericApi (Proxy :: Proxy Routes)
 
-personApi :: Proxy Api
-personApi = Proxy
+record :: Member DatabaseEff r => Routes (AsServerT (Sem r))
+record = Routes { _get     = listPersons
+                , _getById = readPerson
+                , _post    = createPerson
+                , _put     = updatePerson
+                , _delete  = destroyPerson
+                }
 
-createApp :: String -> IO Application
-createApp conn =
-  return
-    (serve personApi $ hoistServer personApi (`interpretServer` conn) server)
-  where
-    interpretServer sem conn =
-      liftToHandler . runM . runError @DbErr . traceToIO . runReader conn . databaseEffToIO $ sem
-    liftToHandler = Handler . ExceptT . fmap handleErrors
-    handleErrors (Left (PersonAlreadyExists name)) = Left err409 { errBody = mconcat ["Person with name `", encodeUtf8 . L.fromStrict $ name, "` already exists..."] }
-    handleErrors (Left (PersonIdDoesNotExist id)) = Left err404 { errBody = mconcat ["Person with id `", encodeUtf8 . L.pack $ show id, "` does not exists..."] }
-    handleErrors (Left (PersonDoesNotExist name)) = Left err404 { errBody = mconcat ["Person with name `", encodeUtf8 . L.fromStrict $ name, "` does not exists..."] }
-    handleErrors (Right value) = Right value
+app :: String -> IO Application
+app conn = return $ genericServeT (interpretServer conn) record
+ where
+  interpretServer conn sem =
+    liftToHandler
+      . runM
+      . runError @DbErr
+      . traceToIO
+      . runReader conn
+      . databaseEffToIO
+      $ sem
+  liftToHandler = Handler . ExceptT . fmap handleErrors
+
+handleErrors :: Either DbErr a -> Either ServerError a
+handleErrors (Left (PersonAlreadyExists name)) = Left err409
+  { errBody = mconcat
+                [ "Person with name `"
+                , encodeUtf8 . L.fromStrict $ name
+                , "` already exists..."
+                ]
+  }
+handleErrors (Left (PersonIdDoesNotExist id)) = Left err404
+  { errBody = mconcat
+                [ "Person with id `"
+                , encodeUtf8 . L.pack $ show id
+                , "` does not exists..."
+                ]
+  }
+handleErrors (Left (PersonDoesNotExist name)) = Left err404
+  { errBody = mconcat
+                [ "Person with name `"
+                , encodeUtf8 . L.fromStrict $ name
+                , "` does not exists..."
+                ]
+  }
+handleErrors (Right value) = Right value
