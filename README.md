@@ -1,5 +1,7 @@
 # polysemy-playground
 
+I used https://github.com/EncodePanda/todo-rest as a reference for my implementation. They are quite similar. They use an in-memory key-value store whereas I use Beam. I also use `servant-generic` to ease integration of Polysemy and Beam.
+
 #### Select person/s
 
 - All
