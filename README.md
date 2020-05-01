@@ -1,5 +1,7 @@
 # polysemy-playground
 
+[![Chiroptical](https://img.shields.io/badge/twitch.tv-chiroptical-purple?logo=twitch&style=for-the-badge)](https://twitch.tv/chiroptical)
+
 I used https://github.com/EncodePanda/todo-rest as a reference for my implementation. They are quite similar. They use an in-memory key-value store whereas I use Beam. I also use `servant-generic` to ease integration of Polysemy and Beam.
 
 #### Select person/s
