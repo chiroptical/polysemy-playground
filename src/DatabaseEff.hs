@@ -16,9 +16,20 @@ import           Database.SQLite.Simple         ( open
                                                 , close
                                                 )
 
-import           Polysemy
-import           Polysemy.Reader
-import           Polysemy.Trace
+import           Polysemy                       ( Member
+                                                , Members
+                                                , Sem
+                                                , makeSem
+                                                , Embed
+                                                , interpret
+                                                , embed
+                                                )
+import           Polysemy.Reader                ( Reader
+                                                , ask
+                                                )
+import           Polysemy.Trace                 ( Trace
+                                                , trace
+                                                )
 import           Polysemy.Error                 ( Error
                                                 , throw
                                                 , fromEither
@@ -54,26 +65,25 @@ databaseEffToIO sem = do
   interpret
     (\case
       MakeTablesIfNotExists -> do
-        trace "CHIRO: makeTableIfNotExist called"
+        trace "Stdout Log: makeTableIfNotExist called"
         embed $ bracket (open conn_s) close Database.makeTablesIfNotExists
       ListPersons mName mAge mAddr -> do
-        trace "CHIRO: listPersons called"
+        trace "Stdout Log: listPersons called"
         embed . runQuery conn_s $ Database.listPersons mName mAge mAddr
       CreatePerson pNoId -> do
-        trace "CHIRO: insertPerson called"
-        (embed . runQuery conn_s $ Database.createPerson pNoId)
-          >>= fromEither
+        trace "Stdout Log: insertPerson called"
+        (embed . runQuery conn_s $ Database.createPerson pNoId) >>= fromEither
       ReadPerson id -> do
-        trace "CHIRO: readPerson called"
+        trace "Stdout Log: readPerson called"
         (embed . runQuery conn_s $ Database.readPerson id)
           >>= note (PersonIdDoesNotExist id)
       UpdatePerson person -> do
         let Person {..} = person
-        trace "CHIRO: updatePerson called"
+        trace "Stdout Log: updatePerson called"
         (embed . runQuery conn_s $ Database.updatePerson person)
           >>= note (PersonDoesNotExist name)
       DestroyPerson person -> do
-        trace "CHIRO: destroyPerson called"
+        trace "Stdout Log: destroyPerson called"
         embed . runQuery conn_s $ Database.destroyPersonByName person
     )
     sem

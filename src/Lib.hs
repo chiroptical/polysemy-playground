@@ -2,10 +2,13 @@
 
 module Lib where
 
-import           Polysemy
-import           Polysemy.Reader
+import           Polysemy                       ( Members
+                                                , Sem
+                                                )
+import           Polysemy.Reader                ( Reader
+                                                , ask
+                                                )
 
--- This was used as an example to understand very basic Polysemy
 newtype Config =
   Config
     { databaseConn :: String

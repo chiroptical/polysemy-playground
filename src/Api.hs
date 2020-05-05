@@ -7,17 +7,33 @@ import           Database                       ( Person(..)
                                                 , PersonNoId(..)
                                                 , DbErr(..)
                                                 )
-import           DatabaseEff
+import           DatabaseEff                    ( DatabaseEff
+                                                , listPersons
+                                                , readPerson
+                                                , createPerson
+                                                , updatePerson
+                                                , destroyPerson
+                                                , databaseEffToIO
+                                                )
 import           Servant
-import           Servant.API.Generic
-import           Servant.Server.Generic
+import           Servant.API.Generic            ( ToServantApi
+                                                , (:-)
+                                                , Generic
+                                                , genericApi
+                                                )
+import           Servant.Server.Generic         ( AsServerT
+                                                , genericServeT
+                                                )
 
-import           Polysemy
-import           Polysemy.Reader
-import           Polysemy.Trace
-import           Polysemy.Error
+import           Polysemy                       ( Member
+                                                , Sem
+                                                , runM
+                                                )
+import           Polysemy.Reader                ( runReader )
+import           Polysemy.Trace                 ( traceToIO )
+import           Polysemy.Error                 ( runError )
 
-import           Control.Monad.Trans.Except
+import           Control.Monad.Trans.Except     ( ExceptT(..) )
 
 import           Data.Text                      ( Text )
 import qualified Data.Text.Lazy                as L

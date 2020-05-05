@@ -7,10 +7,10 @@ import           DatabaseEff                    ( databaseEffToIO
 
 import           Database                       ( DbErr(..) )
 
-import           Polysemy
-import           Polysemy.Reader
-import           Polysemy.Trace
-import           Polysemy.Error
+import           Polysemy                       ( runM )
+import           Polysemy.Reader                ( runReader )
+import           Polysemy.Trace                 ( traceToIO )
+import           Polysemy.Error                 ( runError )
 
 
 import           Network.Wai.Handler.Warp      as Warp

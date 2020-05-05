@@ -26,7 +26,9 @@ import           Database.Beam.Backend.SQL.BeamExtensions
                                                 )
 import           Database.Beam.Sqlite.Connection
                                                 ( Sqlite )
-import           Database.SQLite.Simple
+import           Database.SQLite.Simple         ( execute_
+                                                , Connection
+                                                )
 
 data DbErr = PersonAlreadyExists Text
            | PersonIdDoesNotExist Int
