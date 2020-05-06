@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f4646c97dab873e53af90c7920e0852fc73ee952ac4a8327ee488109bc8ccb46
+-- hash: c71cd3873903e98dc31605fac6aca9668a11ec6ae345358c0123c15b6708be76
 
 name:           polysemy-playground
 version:        0.1.0.0
@@ -89,10 +89,14 @@ test-suite polysemy-playground-test
     , base >=4.7 && <5
     , beam-core
     , beam-sqlite
+    , hspec
+    , http-client
     , polysemy
     , polysemy-playground
     , polysemy-plugin
     , servant
+    , servant-client
+    , servant-client-core
     , servant-server
     , sqlite-simple
     , text

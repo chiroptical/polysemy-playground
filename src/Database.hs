@@ -49,7 +49,7 @@ data Person =
     , age     :: Int
     , address :: Text
     }
-  deriving (Show, Generic, ToJSON, FromJSON)
+  deriving (Eq, Show, Generic, ToJSON, FromJSON)
 
 toPerson :: Person_ -> Person
 toPerson Person_ {..} = Person _personId _personName _personAge _personAddress

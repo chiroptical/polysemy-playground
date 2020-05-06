@@ -11,6 +11,10 @@ tests:
     - -fplugin=Polysemy.Plugin
     dependencies:
     - polysemy-playground
+    - hspec
+    - servant-client
+    - servant-client-core
+    - http-client
 copyright: 2020 Barry Moore
 maintainer: moore0557@gmail.com
 dependencies:
