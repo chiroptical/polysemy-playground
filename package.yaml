@@ -15,8 +15,9 @@ tests:
     - servant-client
     - servant-client-core
     - http-client
+    - directory
 copyright: 2020 Barry Moore
-maintainer: moore0557@gmail.com
+maintainer: chiroptical@gmail.com
 dependencies:
 - text
 - base >= 4.7 && < 5
@@ -30,6 +31,8 @@ dependencies:
 - warp
 - aeson
 - transformers
+- co-log-core
+- co-log-polysemy
 default-extensions:
 - DataKinds
 - FlexibleContexts

@@ -1,0 +1,13 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "polysemy-playground:lib"
+
+    - path: "./app/Main.hs"
+      component: "polysemy-playground:exe:polysemy-playground-exe"
+
+    - path: "./app/Paths_polysemy_playground.hs"
+      component: "polysemy-playground:exe:polysemy-playground-exe"
+
+    - path: "./test"
+      component: "polysemy-playground:test:polysemy-playground-test"

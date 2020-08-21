@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c71cd3873903e98dc31605fac6aca9668a11ec6ae345358c0123c15b6708be76
+-- hash: 2c0071488f96dfe2f03abf145e2cc760d0dcc653e958b11f16a445c5a740f32c
 
 name:           polysemy-playground
 version:        0.1.0.0
@@ -12,7 +12,7 @@ description:    Please see the README on GitHub at <https://github.com/barrymoo/
 homepage:       https://github.com/barrymoo/polysemy-playground#readme
 bug-reports:    https://github.com/barrymoo/polysemy-playground/issues
 author:         Barry Moore
-maintainer:     moore0557@gmail.com
+maintainer:     chiroptical@gmail.com
 copyright:      2020 Barry Moore
 license:        BSD3
 license-file:   LICENSE
@@ -31,6 +31,7 @@ library
       Database
       DatabaseEff
       Lib
+      Message
   other-modules:
       Paths_polysemy_playground
   hs-source-dirs:
@@ -41,6 +42,8 @@ library
     , base >=4.7 && <5
     , beam-core
     , beam-sqlite
+    , co-log-core
+    , co-log-polysemy
     , polysemy
     , polysemy-plugin
     , servant
@@ -64,6 +67,8 @@ executable polysemy-playground-exe
     , base >=4.7 && <5
     , beam-core
     , beam-sqlite
+    , co-log-core
+    , co-log-polysemy
     , polysemy
     , polysemy-playground
     , polysemy-plugin
@@ -89,6 +94,9 @@ test-suite polysemy-playground-test
     , base >=4.7 && <5
     , beam-core
     , beam-sqlite
+    , co-log-core
+    , co-log-polysemy
+    , directory
     , hspec
     , http-client
     , polysemy
