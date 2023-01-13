@@ -14,7 +14,7 @@ import qualified Data.Text as T
 import Database
 import Database.Beam.Sqlite (SqliteM, runBeamSqlite)
 import Database.SQLite.Simple (close, open)
-import GHC.Int (Int32)
+import GHC.Int (Int64)
 import Message (Message (..))
 import Polysemy (
   Embed,
@@ -38,9 +38,9 @@ note _ (Just a) = pure a
 
 data DatabaseEff m a where
   MakeTablesIfNotExists :: DatabaseEff m ()
-  ListPersons :: Maybe Text -> Maybe Int32 -> Maybe Text -> DatabaseEff m [Person]
+  ListPersons :: Maybe Text -> Maybe Int64 -> Maybe Text -> DatabaseEff m [Person]
   CreatePerson :: PersonNoId -> DatabaseEff m Person
-  ReadPerson :: Int32 -> DatabaseEff m Person
+  ReadPerson :: Int64 -> DatabaseEff m Person
   UpdatePerson :: Person -> DatabaseEff m Person
   DestroyPerson :: Person -> DatabaseEff m ()
 

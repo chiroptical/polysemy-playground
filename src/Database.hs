@@ -24,24 +24,24 @@ import Database.Beam.Backend.SQL.BeamExtensions (
  )
 import Database.Beam.Sqlite.Connection (Sqlite)
 import Database.SQLite.Simple (Connection, execute_)
-import GHC.Int (Int32)
+import GHC.Int (Int64)
 
 data DbErr
   = PersonAlreadyExists Text
-  | PersonIdDoesNotExist Int32
+  | PersonIdDoesNotExist Int64
   | PersonDoesNotExist Text
 
 data PersonNoId = PersonNoId
   { name :: Text
-  , age :: Int32
+  , age :: Int64
   , address :: Text
   }
   deriving (Show, Generic, ToJSON, FromJSON)
 
 data Person = Person
-  { id :: Int32
+  { id :: Int64
   , name :: Text
-  , age :: Int32
+  , age :: Int64
   , address :: Text
   }
   deriving (Eq, Show, Generic, ToJSON, FromJSON)
@@ -50,9 +50,9 @@ toPerson :: Person_ -> Person
 toPerson Person_ {..} = Person _personId _personName _personAge _personAddress
 
 data PersonT f = Person_
-  { _personId :: C f Int32
+  { _personId :: C f Int64
   , _personName :: C f Text
-  , _personAge :: C f Int32
+  , _personAge :: C f Int64
   , _personAddress :: C f Text
   }
   deriving (Generic, Beamable)
@@ -64,7 +64,7 @@ deriving instance Show Person_
 deriving instance Eq Person_
 
 instance Table PersonT where
-  data PrimaryKey PersonT f = PersonId (C f Int32)
+  data PrimaryKey PersonT f = PersonId (C f Int64)
     deriving (Generic, Beamable)
   primaryKey = PersonId . _personId
 
@@ -100,7 +100,7 @@ makeTablesIfNotExists conn =
     \)"
 
 listPersons ::
-  MonadBeam Sqlite m => Maybe Text -> Maybe Int32 -> Maybe Text -> m [Person]
+  MonadBeam Sqlite m => Maybe Text -> Maybe Int64 -> Maybe Text -> m [Person]
 listPersons mName mAge mAddr =
   (fmap . fmap) toPerson $
     runSelectReturningList $
@@ -138,10 +138,10 @@ readPersonByName_ name =
       guard_ (_personName person_ ==. val_ name)
       return person_
 
-readPerson :: MonadBeam Sqlite m => Int32 -> m (Maybe Person)
+readPerson :: MonadBeam Sqlite m => Int64 -> m (Maybe Person)
 readPerson = (fmap . fmap) toPerson . readPerson_
 
-readPerson_ :: MonadBeam Sqlite m => Int32 -> m (Maybe Person_)
+readPerson_ :: MonadBeam Sqlite m => Int64 -> m (Maybe Person_)
 readPerson_ id =
   runSelectReturningOne $
     select $ do

@@ -24,7 +24,7 @@ import DatabaseEff (
   readPerson,
   updatePerson,
  )
-import GHC.Int (Int32)
+import GHC.Int (Int64)
 import Message (Message (..), logMessageStdout)
 import Polysemy (Member, Sem, runM)
 import Polysemy.Error (runError)
@@ -47,8 +47,8 @@ type QPStrict = QueryParam' '[Strict, Required]
 -- PUT /person is Update
 -- DELETE /person is Destroy
 data Routes route = Routes
-  { _get :: route :- "person" :> QueryParam "name" Text :> QueryParam "age" Int32 :> QueryParam "address" Text :> Get '[JSON] [Person]
-  , _getById :: route :- "person" :> Capture "id" Int32 :> Get '[JSON] Person
+  { _get :: route :- "person" :> QueryParam "name" Text :> QueryParam "age" Int64 :> QueryParam "address" Text :> Get '[JSON] [Person]
+  , _getById :: route :- "person" :> Capture "id" Int64 :> Get '[JSON] Person
   , _post :: route :- "person" :> ReqBody '[JSON] PersonNoId :> Post '[JSON] Person
   , _put :: route :- "person" :> ReqBody '[JSON] Person :> Put '[JSON] Person
   , _delete :: route :- "person" :> ReqBody '[JSON] Person :> Delete '[JSON] ()

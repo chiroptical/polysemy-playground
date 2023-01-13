@@ -11,4 +11,7 @@ format: hpack
 ghcid: hpack
 	ghcid -c cabal repl
 
-.PHONY: hpack build format ghcid
+run: hpack
+	cabal run
+
+.PHONY: hpack build format ghcid run
