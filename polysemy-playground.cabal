@@ -1,10 +1,8 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.35.1.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: 2c0071488f96dfe2f03abf145e2cc760d0dcc653e958b11f16a445c5a740f32c
 
 name:           polysemy-playground
 version:        0.1.0.0
@@ -36,7 +34,18 @@ library
       Paths_polysemy_playground
   hs-source-dirs:
       src
-  default-extensions: DataKinds FlexibleContexts GADTs LambdaCase PolyKinds RankNTypes ScopedTypeVariables TypeApplications TypeOperators TypeFamilies OverloadedStrings
+  default-extensions:
+      DataKinds
+      FlexibleContexts
+      GADTs
+      LambdaCase
+      PolyKinds
+      RankNTypes
+      ScopedTypeVariables
+      TypeApplications
+      TypeOperators
+      TypeFamilies
+      OverloadedStrings
   build-depends:
       aeson
     , base >=4.7 && <5
@@ -60,7 +69,18 @@ executable polysemy-playground-exe
       Paths_polysemy_playground
   hs-source-dirs:
       app
-  default-extensions: DataKinds FlexibleContexts GADTs LambdaCase PolyKinds RankNTypes ScopedTypeVariables TypeApplications TypeOperators TypeFamilies OverloadedStrings
+  default-extensions:
+      DataKinds
+      FlexibleContexts
+      GADTs
+      LambdaCase
+      PolyKinds
+      RankNTypes
+      ScopedTypeVariables
+      TypeApplications
+      TypeOperators
+      TypeFamilies
+      OverloadedStrings
   ghc-options: -threaded -rtsopts -with-rtsopts=-N -fplugin=Polysemy.Plugin -O2 -flate-specialise -fspecialise-aggressively
   build-depends:
       aeson
@@ -87,7 +107,18 @@ test-suite polysemy-playground-test
       Paths_polysemy_playground
   hs-source-dirs:
       test
-  default-extensions: DataKinds FlexibleContexts GADTs LambdaCase PolyKinds RankNTypes ScopedTypeVariables TypeApplications TypeOperators TypeFamilies OverloadedStrings
+  default-extensions:
+      DataKinds
+      FlexibleContexts
+      GADTs
+      LambdaCase
+      PolyKinds
+      RankNTypes
+      ScopedTypeVariables
+      TypeApplications
+      TypeOperators
+      TypeFamilies
+      OverloadedStrings
   ghc-options: -threaded -rtsopts -with-rtsopts=-N -fplugin=Polysemy.Plugin
   build-depends:
       aeson
