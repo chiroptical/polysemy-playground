@@ -81,7 +81,7 @@ cliRoutes ::
 cliRoutes cenv = genericClientHoist nt
   where
     nt :: Members '[Embed IO, Error ClientError] r => ClientM a -> Sem r a
-    nt cm = (embed $ runClientM cm cenv) >>= fromEither
+    nt cm = embed (runClientM cm cenv) >>= fromEither
 
 cliGet ::
   Members '[Embed IO, Error ClientError] r =>
@@ -121,17 +121,17 @@ businessLogicSpec =
         result <-
           runM @IO . runError @ClientError $
             cliPost (clientEnv port) examplePerson
-        result `shouldBe` (Right examplePersonWithId)
+        result `shouldBe` Right examplePersonWithId
       it "GET /person/1" $ \port -> do
         result <-
           runM @IO . runError @ClientError $
             cliGetById (clientEnv port) personId
-        result `shouldBe` (Right examplePersonWithId)
+        result `shouldBe` Right examplePersonWithId
       it "GET /person" $ \port -> do
         result <-
           runM @IO . runError @ClientError $
             cliGet (clientEnv port) Nothing Nothing Nothing
-        result `shouldBe` (Right [examplePersonWithId])
+        result `shouldBe` Right [examplePersonWithId]
 
 spec :: Spec
 spec = businessLogicSpec

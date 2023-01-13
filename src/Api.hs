@@ -4,7 +4,6 @@
 
 module Api where
 
-import Colog.Core.IO (logStringStdout)
 import Colog.Polysemy (runLogAction)
 import Control.Monad.Trans.Except (ExceptT (..))
 import Data.Text (Text)
@@ -25,17 +24,13 @@ import DatabaseEff (
   updatePerson,
  )
 import GHC.Int (Int64)
-import Message (Message (..), logMessageStdout)
+import Message (logMessageStdout)
 import Polysemy (Member, Sem, runM)
 import Polysemy.Error (runError)
 import Polysemy.Reader (runReader)
-import Polysemy.Trace (traceToIO)
 import Servant
 import Servant.API.Generic (
   Generic,
-  ToServantApi,
-  genericApi,
-  (:-),
  )
 import Servant.Server.Generic (AsServerT, genericServeT)
 
@@ -71,44 +66,43 @@ record =
 app :: String -> IO Application
 app conn = return $ genericServeT (interpretServer conn) record
   where
-    interpretServer conn sem =
+    interpretServer c =
       liftToHandler
         . runM
         . runError @DbErr
         . runLogAction @IO logMessageStdout
-        . runReader conn
+        . runReader c
         . databaseEffToIO
-        $ sem
     liftToHandler = Handler . ExceptT . fmap handleErrors
 
 handleErrors :: Either DbErr a -> Either ServerError a
-handleErrors (Left (PersonAlreadyExists name)) =
+handleErrors (Left (PersonAlreadyExists withName)) =
   Left
     err409
       { errBody =
           mconcat
             [ "Person with name `"
-            , encodeUtf8 . L.fromStrict $ name
+            , encodeUtf8 . L.fromStrict $ withName
             , "` already exists..."
             ]
       }
-handleErrors (Left (PersonIdDoesNotExist id)) =
+handleErrors (Left (PersonIdDoesNotExist withPrimaryKey)) =
   Left
     err404
       { errBody =
           mconcat
             [ "Person with id `"
-            , encodeUtf8 . L.pack $ show id
+            , encodeUtf8 . L.pack $ show withPrimaryKey
             , "` does not exists..."
             ]
       }
-handleErrors (Left (PersonDoesNotExist name)) =
+handleErrors (Left (PersonDoesNotExist withName)) =
   Left
     err404
       { errBody =
           mconcat
             [ "Person with name `"
-            , encodeUtf8 . L.fromStrict $ name
+            , encodeUtf8 . L.fromStrict $ withName
             , "` does not exists..."
             ]
       }

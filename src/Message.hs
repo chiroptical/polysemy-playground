@@ -15,8 +15,9 @@ logMessageStdout :: LogAction IO Message
 logMessageStdout = LogAction $ liftIO . putStrMessage
   where
     putStrMessage :: Message -> IO ()
-    putStrMessage Message {..}
-      | severity == Debug = putStrLn $ "[DEBUG]: " ++ message
-      | severity == Info = putStrLn $ "[INFO]: " ++ message
-      | severity == Warning = putStrLn $ "[WARNING]: " ++ message
-      | severity == Error = putStrLn $ "[ERROR]: " ++ message
+    putStrMessage Message {..} =
+      case severity of
+        Debug -> putStrLn $ "[DEBUG]: " ++ message
+        Info -> putStrLn $ "[INFO]: " ++ message
+        Warning -> putStrLn $ "[WARNING]: " ++ message
+        Error -> putStrLn $ "[ERROR]: " ++ message

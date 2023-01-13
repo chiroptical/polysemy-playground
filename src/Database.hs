@@ -10,17 +10,12 @@
 
 module Database where
 
-import Control.Monad.Fail (MonadFail)
 import Data.Aeson (FromJSON, ToJSON)
-import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import Database.Beam
-import Database.Beam.Backend.SQL
 import Database.Beam.Backend.SQL.BeamExtensions (
   MonadBeamInsertReturning,
-  MonadBeamUpdateReturning,
   runInsertReturningList,
-  runUpdateReturningList,
  )
 import Database.Beam.Sqlite.Connection (Sqlite)
 import Database.SQLite.Simple (Connection, execute_)
@@ -39,7 +34,7 @@ data PersonNoId = PersonNoId
   deriving (Show, Generic, ToJSON, FromJSON)
 
 data Person = Person
-  { id :: Int64
+  { pKey :: Int64
   , name :: Text
   , age :: Int64
   , address :: Text
@@ -142,16 +137,16 @@ readPerson :: MonadBeam Sqlite m => Int64 -> m (Maybe Person)
 readPerson = (fmap . fmap) toPerson . readPerson_
 
 readPerson_ :: MonadBeam Sqlite m => Int64 -> m (Maybe Person_)
-readPerson_ id =
+readPerson_ key =
   runSelectReturningOne $
     select $ do
       person_ <- all_ (_personPerson personDb)
-      guard_ (_personId person_ ==. val_ id)
+      guard_ (_personId person_ ==. val_ key)
       return person_
 
 updatePerson :: MonadBeam Sqlite m => Person -> m (Maybe Person)
 updatePerson Person {..} = do
-  mPerson_ <- readPerson_ id
+  mPerson_ <- readPerson_ pKey
   case mPerson_ of
     Nothing -> return Nothing
     Just person_ -> do

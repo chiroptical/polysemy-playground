@@ -1,5 +1,5 @@
 build: hpack
-	cabal build
+	cabal --ghc-options='${GHC_OPTIONS}' build
 
 hpack:
 	hpack .
@@ -9,9 +9,12 @@ format: hpack
 	find app/ src/ test/ -name "*.hs" -exec fourmolu -i {} +
 
 ghcid: hpack
-	ghcid -c cabal repl
+	ghcid -c cabal --ghc-options='${GHC_OPTIONS}' repl
 
 run: hpack
-	cabal run
+	cabal --ghc-options='${GHC_OPTIONS}' run
 
-.PHONY: hpack build format ghcid run
+hlint: hpack
+	hlint .
+
+.PHONY: hpack build format ghcid run hlint

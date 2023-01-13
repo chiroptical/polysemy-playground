@@ -10,7 +10,6 @@ import Colog.Core (Severity (..))
 import Colog.Polysemy (Log, log)
 import Control.Exception (bracket)
 import Data.Text (Text)
-import qualified Data.Text as T
 import Database
 import Database.Beam.Sqlite (SqliteM, runBeamSqlite)
 import Database.SQLite.Simple (close, open)
@@ -27,7 +26,6 @@ import Polysemy (
  )
 import Polysemy.Error (Error, fromEither, throw)
 import Polysemy.Reader (Reader, ask)
-import Polysemy.Trace (Trace, trace)
 import Prelude hiding (log)
 
 -- This function is defined in Polysemy.Error for 1.3.0.0
@@ -66,10 +64,10 @@ databaseEffToIO sem = do
         CreatePerson pNoId -> do
           log $ Message Info "insertPerson called"
           (embed . runQuery conn_s $ Database.createPerson pNoId) >>= fromEither
-        ReadPerson id -> do
+        ReadPerson pKey -> do
           log $ Message Info "readPerson called"
-          (embed . runQuery conn_s $ Database.readPerson id)
-            >>= note (PersonIdDoesNotExist id)
+          (embed . runQuery conn_s $ Database.readPerson pKey)
+            >>= note (PersonIdDoesNotExist pKey)
         UpdatePerson person -> do
           let Person {..} = person
           log $ Message Info "updatePerson called"
