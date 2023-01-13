@@ -20,7 +20,7 @@ copyright: 2020 Barry Moore
 maintainer: chiroptical@gmail.com
 dependencies:
 - text
-- base >=4.7 && <5
+- base >= 4.7 && < 5
 - polysemy
 - polysemy-plugin
 - beam-core
